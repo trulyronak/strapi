@@ -12,6 +12,7 @@ module.exports = opts => {
     strapiVersion,
     projectName,
     uuid,
+    apidocs,
   } = opts;
 
   // Finally, return the JSON.
@@ -25,6 +26,8 @@ module.exports = opts => {
       start: 'strapi start',
       build: 'strapi build',
       strapi: 'strapi',
+      ...(apidocs && { monitor: 'api start' }),
+      ...(apidocs && { spec: 'api spec' }),
     },
     devDependencies: {},
     dependencies: Object.assign(
@@ -33,7 +36,8 @@ module.exports = opts => {
         acc[key] = strapiVersion;
         return acc;
       }, {}),
-      additionalsDependencies
+      additionalsDependencies,
+      { ...(apidocs && { '@useoptic/cli': 'latest' }) }
     ),
     author: {
       name: 'A Strapi developer',

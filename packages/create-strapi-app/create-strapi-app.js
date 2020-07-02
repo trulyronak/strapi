@@ -29,6 +29,7 @@ program
   .option('--dbauth <dbauth>', 'Authentication Database')
   .option('--dbfile <dbfile>', 'Database file path for sqlite')
   .option('--dbforce', 'Overwrite database content if any')
+  .option('--apidocs', 'Generate automatic documentation for your api using Optic')
   .description('create a new application')
   .action(directory => {
     projectName = directory;

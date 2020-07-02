@@ -51,7 +51,7 @@ module.exports = async function createQuickStartProject(scope) {
   try {
     await trackUsage({ event: 'willStartServer', scope });
 
-    await execa('npm', ['run', 'develop'], {
+    await execa('npm', ['run', scope.apidocs ? 'monitor' : 'develop'], {
       stdio: 'inherit',
       cwd: scope.rootPath,
       env: {

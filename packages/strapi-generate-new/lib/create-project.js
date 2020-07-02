@@ -11,6 +11,7 @@ const stopProcess = require('./utils/stop-process');
 const { trackUsage, captureStderr } = require('./utils/usage');
 const packageJSON = require('./resources/json/package.json');
 const databaseJSON = require('./resources/json/database.json.js');
+const opticConfig = require('./resources/files/config/optic.js');
 
 module.exports = async function createProject(scope, { client, connection, dependencies }) {
   console.log('Creating files.');
@@ -41,6 +42,7 @@ module.exports = async function createProject(scope, { client, connection, depen
         strapiVersion: scope.strapiVersion,
         projectName: _.kebabCase(scope.name),
         uuid: scope.uuid,
+        apidocs: scope.apidocs,
       }),
       {
         spaces: 2,
@@ -64,6 +66,16 @@ module.exports = async function createProject(scope, { client, connection, depen
   } catch (err) {
     await fse.remove(scope.rootPath);
     throw err;
+  }
+
+  if (scope.apidocs) {
+    try {
+      await fse.writeFile(join(rootPath, 'optic.yml'), opticConfig(_.kebabCase(scope.name)));
+    } catch (error) {
+      console.error(`${chalk.red('Error')} while writing optic.yml for apidocs`);
+      await fse.remove(rootPath);
+      throw error;
+    }
   }
 
   await trackUsage({ event: 'willInstallProjectDependencies', scope });
@@ -146,6 +158,16 @@ module.exports = async function createProject(scope, { client, connection, depen
   console.log(`  ${cmd} strapi`);
   console.log(`  Display all available commands.`);
   console.log();
+  if (scope.apidocs) {
+    console.log(`  ${cmd} monitor`);
+    console.log(
+      `  Start Strapi with Optic monitoring all requests to automatically generate documentation.`
+    );
+    console.log();
+    console.log(`  ${cmd} spec`);
+    console.log(`  Display current documentation specifications.`);
+    console.log();
+  }
   console.log('You can start by doing:');
   console.log();
   console.log(`  ${chalk.cyan('cd')} ${rootPath}`);
